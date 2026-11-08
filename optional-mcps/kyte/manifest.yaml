@@ -14,12 +14,15 @@ transport:
   command: kyte
   args:
     - mcp
-    # Hermes gets its own folder, resolved from the environment at connect
-    # time: kyte keeps an encrypted local copy of the workspace in it, and one
-    # folder serves one process. Sharing a folder with a kyte session in a
-    # terminal would put two writers on one database.
+    # Hermes gets its own folder: kyte keeps an encrypted local copy of the
+    # workspace in it, and one folder serves one process. Sharing a folder with
+    # a kyte session in a terminal would put two writers on one database.
+    #
+    # The `~` is kyte's to expand, not a shell's and not Hermes's. ${HOME}
+    # would work here on macOS and Linux and fail on Windows, where that
+    # variable is usually unset — and a manifest cannot branch per platform.
     - --db
-    - ${HOME}/.kyte/hermes
+    - ~/.kyte/hermes
 
 # No credentials here. `kyte login` signs in through the browser once and
 # stores the session in the folder above; the server reads it from there.
@@ -49,6 +52,10 @@ post_install: |
        ~/.local/bin/kyte login --db ~/.kyte/hermes
 
   3. Start a new Hermes session.
+
+  Needs a kyte that expands `~` in --db itself (any release from November 2026
+  on). On an older one, use the absolute path instead:
+    hermes mcp add kyte --command kyte --args mcp --db "$HOME/.kyte/hermes"
 
   Until you have signed in, the server offers a single tool that says so.
   Everything kyte does here happens as you, under your own permissions, and
