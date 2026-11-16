@@ -53,8 +53,8 @@ post_install: |
 
   3. Start a new Hermes session.
 
-  Needs a kyte that expands `~` in --db itself (any release from November 2026
-  on). On an older one, use the absolute path instead:
+  Needs kyte 0.1.1227 or newer, which expands the `~` in --db itself. On an
+  older one, add the server by hand with the path already expanded:
     hermes mcp add kyte --command kyte --args mcp --db "$HOME/.kyte/hermes"
 
   Until you have signed in, the server offers a single tool that says so.
