@@ -62,9 +62,14 @@ PY
 echo "── the skill and the catalog entry point at the same data folder"
 # Two halves that disagree send the person to sign in for a folder the server
 # never opens, and the symptom is a workspace that stays empty.
+# Either half may write the home as `~` or as `${HOME}`; what has to match is the
+# rest of the path, so both are read with that prefix taken off.
+without_home() { printf '%s\n' "$1" | sed -E 's|^(~\|\$\{HOME\})||'; }
 skill_folder="$(grep -o 'kyte login --db [^ ]*' "$here/skills/kyte/SKILL.md" | awk '{print $4}')"
 manifest_folder="$(grep -o '[~$][{A-Za-z}]*/\.kyte/[a-z]*' "$here/optional-mcps/kyte/manifest.yaml" | head -1)"
-[ "${skill_folder#\~}" = "${manifest_folder#*\}}" ] \
+[ -n "$skill_folder" ] && [ -n "$manifest_folder" ] \
+  || { echo "FAIL: no data folder found (skill '$skill_folder', manifest '$manifest_folder')"; exit 1; }
+[ "$(without_home "$skill_folder")" = "$(without_home "$manifest_folder")" ] \
   || { echo "FAIL: skill says $skill_folder, manifest says $manifest_folder"; exit 1; }
 echo "   both: $skill_folder"
 
