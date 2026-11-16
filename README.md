@@ -23,6 +23,9 @@ entry writes for you:
 hermes mcp add kyte --command kyte --args mcp --db "$HOME/.kyte/hermes"
 ```
 
+(The entry itself writes `~/.kyte/hermes` and leaves the `~` for kyte to expand, which is right on
+every platform. Doing that by hand needs a shell to expand it, hence `$HOME` in the line above.)
+
 Once it is in the catalog, that becomes:
 
 ```

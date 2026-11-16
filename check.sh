@@ -25,9 +25,9 @@ run mcp catalog | grep -q '^  kyte ' || { echo "FAIL: kyte not listed"; exit 1; 
 echo "── it installs"
 printf 'y\n' | run mcp install kyte >/dev/null
 
-echo "── the data folder is its own, and still a variable in the config"
-grep -q 'KYTE\|\${HOME}/.kyte/hermes' "$sandbox/home/config.yaml" \
-  || { echo "FAIL: data folder not written"; exit 1; }
+echo "── the data folder is its own, and left for kyte to expand"
+grep -q -- '- ~/.kyte/hermes' "$sandbox/home/config.yaml" \
+  || { echo "FAIL: data folder not written as ~/.kyte/hermes"; exit 1; }
 
 echo "── it connects and serves tools"
 run mcp test kyte | tee "$sandbox/test.out" | grep -q '✓ Connected' \
