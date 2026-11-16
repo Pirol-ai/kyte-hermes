@@ -9,14 +9,25 @@ reachable from Hermes.
 
 ## What is here
 
+Two halves, and they are independent — either one works without the other.
+
 | | |
 | - | - |
-| `optional-mcps/kyte/` | the MCP catalog entry, in the form Hermes reads it. The copy we propose upstream lives here too, so the one people install and the one we maintain are the same file. |
+| `optional-mcps/kyte/` | **the connection**: the MCP catalog entry, in the form Hermes reads it. The copy we propose upstream lives here too, so the one people install and the one we maintain are the same file. |
+| `skills/kyte/` | **the knowledge**: how to work in a kyte workspace once the tools are there. Hermes shows the model the tool names and nothing else, so this is the only way that knowledge reaches it. |
 | `check.sh` | proves the entry works, in a throwaway Hermes home that never touches yours |
+| `check-skill.sh` | proves the skill is read, and that the install gate lets it through |
 
 ## Install it today
 
-The catalog entry is not upstream yet, so add the server by hand — it is the same two lines the
+**The skill** needs nothing from anyone. A tap is just a GitHub repository, so this works now:
+
+```
+hermes skills tap add Pirol-ai/kyte-hermes
+hermes skills install kyte
+```
+
+**The connection** is not upstream yet, so add the server by hand — it is the same two lines the
 entry writes for you:
 
 ```
@@ -65,11 +76,19 @@ anywhere.
 
 ```
 ./check.sh
+./check-skill.sh
 ```
 
-It gives itself a temporary `HERMES_HOME` and `HOME`, lists the entry, installs it, connects, and
-prints the tools it found. Without a kyte session that is a single tool explaining how to sign in —
-which is the behaviour worth having, and worth checking.
+The first gives itself a temporary `HERMES_HOME` and `HOME`, lists the entry, installs it,
+connects, and prints the tools it found. Without a kyte session that is a single tool explaining
+how to sign in — which is the behaviour worth having, and worth checking.
+
+The second mounts `skills/` into a throwaway Hermes home and checks that the skill comes back under
+the name people type, then runs Hermes's own install scanner over it. That second step is not
+decoration: a skill from a repository like this one counts as `community`, and for community even a
+`caution` verdict blocks the install — `--force` does not help. One line piping a download into a
+shell is a `critical` finding, and one is enough. That is why the install steps inside the skill
+point at the documentation instead of carrying the installer command.
 
 ## License
 
