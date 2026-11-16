@@ -7,7 +7,6 @@ metadata:
   hermes:
     tags: [kyte, company-os, crm, projects, time-tracking]
     category: productivity
-    requires_toolsets: [mcp]
 ---
 
 # Working in kyte

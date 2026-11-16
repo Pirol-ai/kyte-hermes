@@ -1,0 +1,30 @@
+{
+  "version": 5,
+  "manifest": {
+    "kyte/SKILL.md": [
+      1794829052408641424,
+      4619,
+      286789068,
+      1794829052408641424,
+      "20175058e3a83ffeb3e2edb89baea90a"
+    ]
+  },
+  "skills": [
+    {
+      "skill_name": "kyte",
+      "category": "kyte",
+      "frontmatter_name": "kyte",
+      "rel": "kyte/SKILL.md",
+      "description": "Work with the company's kyte workspace — customers...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": [],
+        "session_platforms": []
+      },
+      "requires_apps": []
+    }
+  ]
+}
