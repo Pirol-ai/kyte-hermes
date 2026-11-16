@@ -20,12 +20,19 @@ Two halves, and they are independent — either one works without the other.
 
 ## Install it today
 
-**The skill** needs nothing from anyone. A tap is just a GitHub repository, so this works now:
+**The skill** needs nothing from anyone — no registry, no review. One line, and it carries the full
+address of the skill, not its name:
 
 ```
-hermes skills tap add Pirol-ai/kyte-hermes
-hermes skills install kyte
+hermes skills install Pirol-ai/kyte-hermes/skills/kyte
 ```
+
+The name alone (`hermes skills install kyte`) answers *"No exact match"*, and `hermes skills search
+kyte` finds nothing either. That is not about this repository: Hermes answers search from a central
+index that leaves GitHub out, so no GitHub repository surfaces by its bare name. Adding this one as
+a tap (`hermes skills tap add Pirol-ai/kyte-hermes`) does not change it — a tap registers the
+source, and searching it with `--source github` walks every tap, which takes minutes against a
+30-second budget. The identifier above needs no tap at all.
 
 **The connection** is not upstream yet, so add the server by hand — it is the same two lines the
 entry writes for you:
@@ -84,11 +91,15 @@ connects, and prints the tools it found. Without a kyte session that is a single
 how to sign in — which is the behaviour worth having, and worth checking.
 
 The second mounts `skills/` into a throwaway Hermes home and checks that the skill comes back under
-the name people type, then runs Hermes's own install scanner over it. That second step is not
-decoration: a skill from a repository like this one counts as `community`, and for community even a
-`caution` verdict blocks the install — `--force` does not help. One line piping a download into a
+the name people type, runs Hermes's own install scanner over it, and finally installs the published
+path the way this README tells people to — so a line that does not work cannot sit here again. The
+scanner step is not decoration: a skill from a repository like this one counts as `community`, and
+for community even a `caution` verdict blocks the install — `--force` does not help. One line piping a download into a
 shell is a `critical` finding, and one is enough. That is why the install steps inside the skill
 point at the documentation instead of carrying the installer command.
+
+The last step talks to GitHub and installs what is on `main`, not what is in your working tree;
+`KYTE_SKIP_NETWORK=1 ./check-skill.sh` leaves it out.
 
 ## License
 

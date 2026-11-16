@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Prove the skill works as a tap, without touching the Hermes you actually use.
 #
-# Two things have to hold, and they fail for different reasons:
+# Three things have to hold, and they fail for different reasons:
 #
 #   1. Hermes reads it. The frontmatter parses and the skill is called `kyte`,
 #      which is the name people will type. Checked by mounting this repo's
@@ -73,5 +73,22 @@ manifest_folder="$(grep -o '[~$][{A-Za-z}]*/\.kyte/[a-z]*' "$here/optional-mcps/
   || { echo "FAIL: skill says $skill_folder, manifest says $manifest_folder"; exit 1; }
 echo "   both: $skill_folder"
 
+echo "── the line in the README installs it"
+# The identifier, not the name: `hermes skills install kyte` answers "No exact
+# match", because search is index-first and the index does not carry GitHub.
+# A second sandbox, so the external_dirs mount above cannot stand in for the
+# download. No token needed; the repository is public.
+if [ "${KYTE_SKIP_NETWORK:-}" = "1" ]; then
+  echo "   SKIP: KYTE_SKIP_NETWORK=1"
+else
+  mkdir -p "$sandbox/net/home" "$sandbox/net/fakehome"
+  printf 'y\n' | env HOME="$sandbox/net/fakehome" HERMES_HOME="$sandbox/net/home" PATH="$PATH" \
+    hermes skills install Pirol-ai/kyte-hermes/skills/kyte > "$sandbox/install.out" 2>&1 || true
+  grep -q 'Installed: kyte' "$sandbox/install.out" \
+    || { echo "FAIL: the README's install line did not install"; \
+         sed -E 's/\x1b\[[0-9;]*m//g' "$sandbox/install.out" | tail -20; exit 1; }
+  sed -E 's/\x1b\[[0-9;]*m//g' "$sandbox/install.out" | grep -E 'Verdict|Decision' | sed 's/^/   /'
+fi
+
 echo
-echo "✓ the skill installs as a tap"
+echo "✓ the skill is read, scans clean, and installs from GitHub"
