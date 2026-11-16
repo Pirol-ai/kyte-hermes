@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Prove the skill works as a tap, without touching the Hermes you actually use.
 #
-# Three things have to hold, and they fail for different reasons:
+# Four things have to hold, and they fail for different reasons:
 #
 #   1. Hermes reads it. The frontmatter parses and the skill is called `kyte`,
 #      which is the name people will type. Checked by mounting this repo's
@@ -59,6 +59,30 @@ PY
 "$python" -I "$sandbox/scan.py" "$agent_dir" "$here/skills/kyte" \
   || { echo "FAIL: the gate would block this skill"; exit 1; }
 
+echo "── the model is offered it"
+# Installed is not offered. Hermes never inlines a skill: it builds an index of
+# `name: description` rows and the model loads one with skill_view(). A skill
+# kept out of that index does not exist for the model — which is what a
+# `metadata.hermes.requires_toolsets` naming a toolset Hermes does not have did
+# to this one, while `hermes skills list` showed it as enabled all along.
+cat > "$sandbox/offered.py" <<'OFFERED'
+import sys
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+import agent.prompt_builder as pb
+
+index = pb.build_skills_system_prompt(
+    available_tools={"skill_view", "skills_list"},
+    available_toolsets={"skills"},
+    skills_dir_override=Path(sys.argv[2]),
+)
+offered = "kyte:" in index
+print("   in the skills index" if offered else "   MISSING from the skills index")
+sys.exit(0 if offered else 1)
+OFFERED
+"$python" -I "$sandbox/offered.py" "$agent_dir" "$here/skills" \
+  || { echo "FAIL: the model would never see this skill"; exit 1; }
+
 echo "── the skill and the catalog entry point at the same data folder"
 # Two halves that disagree send the person to sign in for a folder the server
 # never opens, and the symptom is a workspace that stays empty.
@@ -91,4 +115,4 @@ else
 fi
 
 echo
-echo "✓ the skill is read, scans clean, and installs from GitHub"
+echo "✓ the skill is read, scans clean, is offered to the model, and installs from GitHub"
